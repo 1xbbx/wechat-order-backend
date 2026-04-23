@@ -1,15 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    }
+  "rewrites": [
+    { "source": "/api/menu", "destination": "/api/menu" },
+    { "source": "/api/table", "destination": "/api/table" },
+    { "source": "/api/order", "destination": "/api/order" },
+    { "source": "/api/admin/login", "destination": "/api/admin/login" },
+    { "source": "/api/admin/orders", "destination": "/api/admin/orders" },
+    { "source": "/api/admin/products", "destination": "/api/admin/products" }
   ]
 }
