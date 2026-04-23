@@ -23,16 +23,20 @@ const orderHandler = require('./api/order');
 
 app.get('/api/menu', menuHandler);
 app.get('/api/table', tableHandler);
-app.all('/api/order', orderHandler);          // GET + POST
+app.all('/api/order', orderHandler);
 
 // ========== 管理端接口 ==========
 const loginHandler = require('./api/admin/login');
 const adminOrdersHandler = require('./api/admin/orders');
 const adminProductsHandler = require('./api/admin/products');
+const adminCategoriesHandler = require('./api/admin/categories');
+const adminTablesHandler = require('./api/admin/tables');
 
 app.post('/api/admin/login', loginHandler);
-app.all('/api/admin/orders', adminOrdersHandler);     // GET + PATCH
-app.all('/api/admin/products', adminProductsHandler);  // GET + POST + PATCH + DELETE
+app.all('/api/admin/orders', adminOrdersHandler);
+app.all('/api/admin/products', adminProductsHandler);
+app.all('/api/admin/categories', adminCategoriesHandler);
+app.all('/api/admin/tables', adminTablesHandler);
 
 // 健康检查
 app.get('/', (req, res) => {
@@ -54,8 +58,9 @@ app.listen(PORT, () => {
   console.log(`   GET  /api/order?order_no=xxx`);
   console.log('');
   console.log('🔧 管理端接口:');
-  console.log(`   POST  /api/admin/login`);
-  console.log(`   GET   /api/admin/orders`);
-  console.log(`   PATCH /api/admin/orders`);
-  console.log(`   ALL   /api/admin/products`);
+  console.log(`   POST /api/admin/login`);
+  console.log(`   ALL  /api/admin/orders`);
+  console.log(`   ALL  /api/admin/products`);
+  console.log(`   ALL  /api/admin/categories`);
+  console.log(`   ALL  /api/admin/tables`);
 });
