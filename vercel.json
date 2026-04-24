@@ -2,6 +2,7 @@
   "version": 2,
   "rewrites": [
     { "source": "/", "destination": "/api/index" },
+    { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/api/menu", "destination": "/api/menu" },
     { "source": "/api/table", "destination": "/api/table" },
     { "source": "/api/order", "destination": "/api/order/index" },
