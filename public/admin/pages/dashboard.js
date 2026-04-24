@@ -3,7 +3,7 @@ let dashChart = null;
 async function render_dashboard() {
   document.getElementById('pageContent').innerHTML = '<div class="empty-state">加载中...</div>';
   try {
-    const r = await api('/api/admin/dashboard');
+    const r = await api('/api/admin/system?action=dashboard');
     if (!r.success) return;
     const d = r.data;
     const t = d.today;

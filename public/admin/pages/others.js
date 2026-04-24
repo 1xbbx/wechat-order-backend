@@ -60,7 +60,7 @@ async function delTable(id){if(!confirm('确定删除？'))return;try{const r=aw
 async function render_store() {
   const pc=document.getElementById('pageContent');
   pc.innerHTML='<div class="card"><div class="card-title">店铺信息</div><div id="storeForm">加载中...</div></div>';
-  try{const r=await api('/api/admin/settings');if(r.success){const s=r.data;
+  try{const r=await api('/api/admin/system?action=settings');if(r.success){const s=r.data;
     document.getElementById('storeForm').innerHTML=`
       <div class="form-row"><label class="form-label">店铺名称</label><input class="form-input" id="sName" value="${esc(s.store_name)}"></div>
       <div class="form-row"><label class="form-label">LOGO URL</label><input class="form-input" id="sLogo" value="${esc(s.logo_url)}"></div>
@@ -73,7 +73,7 @@ async function render_store() {
 }
 async function saveStore(){
   const body={store_name:document.getElementById('sName').value.trim(),logo_url:document.getElementById('sLogo').value.trim(),address:document.getElementById('sAddr').value.trim(),phone:document.getElementById('sPhone').value.trim(),business_hours:document.getElementById('sHours').value.trim(),announcement:document.getElementById('sAnnounce').value.trim()};
-  try{const r=await api('/api/admin/settings','PATCH',body);if(r.success){showToast('保存成功');document.getElementById('brandName').textContent=body.store_name||'点单系统';}else alert(r.message);}catch(e){alert('网络错误');}
+  try{const r=await api('/api/admin/system','PATCH',body);if(r.success){showToast('保存成功');document.getElementById('brandName').textContent=body.store_name||'点单系统';}else alert(r.message);}catch(e){alert('网络错误');}
 }
 
 // ===== 系统设置 =====
@@ -93,7 +93,7 @@ function render_settings(){
 // ===== 数据统计 =====
 async function render_analytics() {
   document.getElementById('pageContent').innerHTML='<div class="empty-state">加载中...</div>';
-  try{const r=await api('/api/admin/dashboard');if(!r.success)return;const d=r.data;
+  try{const r=await api('/api/admin/system?action=dashboard');if(!r.success)return;const d=r.data;
     document.getElementById('pageContent').innerHTML=`
       <div class="stat-row"><div class="stat-card"><div class="stat-label">今日订单</div><div class="stat-value">${d.today.orderCount}</div></div>
         <div class="stat-card"><div class="stat-label">今日营业额</div><div class="stat-value gold">¥${d.today.revenue}</div></div>
@@ -108,7 +108,7 @@ async function render_analytics() {
 // ===== 财务管理 =====
 async function render_finance(){
   document.getElementById('pageContent').innerHTML='<div class="empty-state">加载中...</div>';
-  try{const r=await api('/api/admin/dashboard');if(!r.success)return;const d=r.data;
+  try{const r=await api('/api/admin/system?action=dashboard');if(!r.success)return;const d=r.data;
     document.getElementById('pageContent').innerHTML=`
       <div class="stat-row" style="grid-template-columns:1fr 1fr">
         <div class="stat-card"><div class="stat-label">今日营业额</div><div class="stat-value gold">¥${d.today.revenue}</div></div>
