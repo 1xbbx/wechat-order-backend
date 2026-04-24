@@ -13,6 +13,8 @@
     { "source": "/api/admin/orders", "destination": "/api/admin/orders" },
     { "source": "/api/admin/products", "destination": "/api/admin/products" },
     { "source": "/api/admin/categories", "destination": "/api/admin/categories" },
-    { "source": "/api/admin/tables", "destination": "/api/admin/tables" }
+    { "source": "/api/admin/tables", "destination": "/api/admin/tables" },
+    { "source": "/api/admin/dashboard", "destination": "/api/admin/dashboard" },
+    { "source": "/api/admin/settings", "destination": "/api/admin/settings" }
   ]
 }

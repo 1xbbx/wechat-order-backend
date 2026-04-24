@@ -2,117 +2,121 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>后台管理 - 点单系统</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 - 点单系统</title>
   <link rel="stylesheet" href="/admin/style.css">
-  <!-- Supabase JS（用于 Realtime） -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
-  <!-- ========== 登录页 ========== -->
-  <div id="loginView" class="view">
-    <div class="login-box">
+  <!-- ===== 登录页 ===== -->
+  <div id="loginView" class="login-view">
+    <div class="login-card">
       <div class="login-logo">🍽️</div>
-      <h1 class="login-title">点单系统后台</h1>
-      <p class="login-subtitle">请输入管理密码</p>
-      <input type="password" id="passwordInput" class="login-input" placeholder="输入密码" autocomplete="off">
-      <button id="loginBtn" class="login-btn" onclick="handleLogin()">登 录</button>
-      <p id="loginError" class="login-error"></p>
+      <h1>点单系统后台</h1>
+      <p class="login-sub">请输入管理密码</p>
+      <input type="password" id="pwdInput" placeholder="管理密码" autocomplete="off">
+      <button id="loginBtn" onclick="doLogin()">登 录</button>
+      <p id="loginErr" class="login-err"></p>
     </div>
   </div>
 
-  <!-- ========== 主界面 ========== -->
-  <div id="mainView" class="view hidden">
+  <!-- ===== 主框架 ===== -->
+  <div id="mainView" class="main-view hidden">
 
-    <!-- 顶部栏 -->
-    <header class="top-bar">
-      <h2 class="top-title" id="pageTitle">📋 订单管理</h2>
-      <button class="logout-btn" onclick="handleLogout()">退出</button>
-    </header>
-
-    <!-- ===== 订单管理页 ===== -->
-    <div id="ordersPage" class="page">
-      <!-- 状态筛选 -->
-      <div class="filter-bar">
-        <button class="filter-btn active" data-status="" onclick="filterOrders(this, '')">全部</button>
-        <button class="filter-btn" data-status="pending" onclick="filterOrders(this, 'pending')">待处理</button>
-        <button class="filter-btn" data-status="paid" onclick="filterOrders(this, 'paid')">已支付</button>
-        <button class="filter-btn" data-status="done" onclick="filterOrders(this, 'done')">已完成</button>
+    <!-- 左侧导航栏 -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-icon">🍽️</span>
+        <span class="brand-name" id="brandName">点单系统</span>
       </div>
 
-      <!-- 新订单提示 -->
-      <div id="newOrderAlert" class="new-order-alert hidden" onclick="dismissAlert()">
-        🔔 <span id="newOrderCount">0</span> 个新订单！点击查看
+      <nav class="sidebar-nav">
+        <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard', this)">
+          <span class="nav-icon">📊</span><span class="nav-text">首页</span>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">业务管理</div>
+          <div class="nav-item" data-page="orders" onclick="navigate('orders', this)">
+            <span class="nav-icon">📋</span><span class="nav-text">订单管理</span>
+            <span class="nav-badge" id="orderBadge"></span>
+          </div>
+          <div class="nav-item" data-page="products" onclick="navigate('products', this)">
+            <span class="nav-icon">🍜</span><span class="nav-text">商品管理</span>
+          </div>
+          <div class="nav-item" data-page="categories" onclick="navigate('categories', this)">
+            <span class="nav-icon">📂</span><span class="nav-text">分类管理</span>
+          </div>
+          <div class="nav-item" data-page="tables" onclick="navigate('tables', this)">
+            <span class="nav-icon">🪑</span><span class="nav-text">桌台管理</span>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">数据中心</div>
+          <div class="nav-item" data-page="analytics" onclick="navigate('analytics', this)">
+            <span class="nav-icon">📈</span><span class="nav-text">数据统计</span>
+          </div>
+          <div class="nav-item" data-page="finance" onclick="navigate('finance', this)">
+            <span class="nav-icon">💰</span><span class="nav-text">财务管理</span>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">系统</div>
+          <div class="nav-item" data-page="store" onclick="navigate('store', this)">
+            <span class="nav-icon">🏪</span><span class="nav-text">店铺设置</span>
+          </div>
+          <div class="nav-item" data-page="settings" onclick="navigate('settings', this)">
+            <span class="nav-icon">⚙️</span><span class="nav-text">系统设置</span>
+          </div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="doLogout()">退出登录</button>
       </div>
+    </aside>
 
-      <!-- 订单列表 -->
-      <div id="ordersList" class="list-container">
-        <div class="loading-tip">加载中...</div>
-      </div>
-    </div>
+    <!-- 右侧内容区 -->
+    <div class="content-area">
+      <!-- 顶部栏 -->
+      <header class="topbar">
+        <h2 class="page-title" id="pageTitle">首页</h2>
+        <div class="topbar-right">
+          <span class="topbar-time" id="topbarTime"></span>
+          <span class="topbar-user">👤 管理员</span>
+        </div>
+      </header>
 
-    <!-- ===== 菜品管理页 ===== -->
-    <div id="productsPage" class="page hidden">
-      <!-- 顶部操作 -->
-      <div class="filter-bar">
-        <button class="add-btn" onclick="showProductForm()">+ 新增菜品</button>
-      </div>
-
-      <!-- 菜品列表 -->
-      <div id="productsList" class="list-container">
-        <div class="loading-tip">加载中...</div>
-      </div>
-    </div>
-
-    <!-- 底部 Tab -->
-    <nav class="tab-bar">
-      <div class="tab-item active" onclick="switchTab('orders', this)">
-        <span class="tab-icon">📋</span>
-        <span class="tab-text">订单</span>
-      </div>
-      <div class="tab-item" onclick="switchTab('products', this)">
-        <span class="tab-icon">🍜</span>
-        <span class="tab-text">菜品</span>
-      </div>
-    </nav>
-  </div>
-
-  <!-- ========== 菜品编辑弹窗 ========== -->
-  <div id="productModal" class="modal hidden">
-    <div class="modal-mask" onclick="closeProductModal()"></div>
-    <div class="modal-body">
-      <h3 class="modal-title" id="modalTitle">新增菜品</h3>
-      <input type="hidden" id="editProductId">
-
-      <label class="form-label">菜品名称 *</label>
-      <input type="text" id="prodName" class="form-input" placeholder="如：宫保鸡丁">
-
-      <label class="form-label">所属分类 *</label>
-      <select id="prodCategory" class="form-input"></select>
-
-      <label class="form-label">价格 (元) *</label>
-      <input type="number" id="prodPrice" class="form-input" placeholder="如：28" step="0.01">
-
-      <label class="form-label">描述</label>
-      <input type="text" id="prodDesc" class="form-input" placeholder="选填">
-
-      <label class="form-label">图片</label>
-      <div class="img-upload">
-        <input type="file" id="prodImage" accept="image/*" onchange="previewImage(this)">
-        <img id="imgPreview" class="img-preview hidden" alt="预览">
-      </div>
-
-      <label class="form-label">排序 (数字越小越靠前)</label>
-      <input type="number" id="prodSort" class="form-input" placeholder="0" value="0">
-
-      <div class="modal-actions">
-        <button class="btn-cancel" onclick="closeProductModal()">取消</button>
-        <button class="btn-confirm" onclick="saveProduct()">保存</button>
-      </div>
+      <!-- 页面内容容器 -->
+      <main class="page-content" id="pageContent">
+        <!-- 由 JS 动态渲染 -->
+      </main>
     </div>
   </div>
+
+  <!-- ===== 通用弹窗 ===== -->
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal-panel" id="modalPanel">
+      <div class="modal-header">
+        <h3 id="modalTitle">弹窗</h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-content" id="modalContent"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+
+  <!-- 提示音（新订单） -->
+  <audio id="alertSound" preload="auto" src="data:audio/wav;base64,UklGRl9vT19teleXhwZWN0teleUAAAA"></audio>
 
   <script src="/admin/app.js"></script>
+  <script src="/admin/pages/dashboard.js"></script>
+  <script src="/admin/pages/orders.js"></script>
+  <script src="/admin/pages/products.js"></script>
+  <script src="/admin/pages/others.js"></script>
 </body>
 </html>
